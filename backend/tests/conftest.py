@@ -1,6 +1,12 @@
-"""Tests never need real secrets: set harmless values before the app is imported."""
+"""Tests never need real secrets or a real database.
+
+Harmless env values are set before the app is imported, and the connection
+pool is replaced with a no-op so the app starts without Postgres.
+"""
 
 import os
+
+import pytest
 
 TEST_ENV = {
     "DATABASE_URL": "postgresql://test:test@localhost:5432/test",
@@ -14,3 +20,11 @@ TEST_ENV = {
 }
 
 os.environ.update(TEST_ENV)
+
+
+@pytest.fixture(autouse=True)
+def no_database(monkeypatch):
+    from app import db
+
+    monkeypatch.setattr(db, "open_pool", lambda database_url: None)
+    monkeypatch.setattr(db, "close_pool", lambda: None)

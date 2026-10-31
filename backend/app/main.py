@@ -5,9 +5,10 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
+from app import db
 from app.config import get_settings
 from app.log import setup_logging
 
@@ -22,8 +23,10 @@ settings = get_settings()  # raises at startup if any variable is missing
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    db.open_pool(settings.database_url)
     log.info("app_started", extra={"cors_origins": settings.cors_origins})
     yield
+    db.close_pool()
     log.info("app_stopped")
 
 
@@ -44,7 +47,10 @@ def root() -> dict:
 
 # GET and HEAD: uptime monitors often send HEAD, and a GET-only route answers 405.
 @app.api_route("/health", methods=["GET", "HEAD"])
-def health() -> dict:
-    # Phase 1 adds a one-row database read here, which also keeps the
-    # free Supabase project from pausing.
-    return {"status": "ok"}
+# Answers 503 when the database is unreachable, so the uptime monitor emails us
+# about database problems too, not only when the server itself is down.
+def health(response: Response) -> dict:
+    if not db.is_healthy():
+        response.status_code = 503
+        return {"status": "error", "database": "unreachable"}
+    return {"status": "ok", "database": "ok"}
