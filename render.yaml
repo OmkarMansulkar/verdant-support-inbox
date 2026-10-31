@@ -1,0 +1,28 @@
+# Render Blueprint for the backend API. Secrets use `sync: false`:
+# Render asks for their values in the dashboard; they are never stored in this file.
+services:
+  - type: web
+    name: verdant-support-inbox-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: WEBHOOK_SECRET
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: LLM_MODEL
+        value: llama-3.3-70b-versatile
+      - key: LLM_FALLBACK_MODEL
+        value: llama-3.1-8b-instant
