@@ -2,7 +2,13 @@
 # Render asks for their values in the dashboard; they are never stored in this file.
 services:
   - type: web
-    name: verdant-support-inbox-api
+    # Same region as the Supabase database (ap-southeast-1): every request makes
+    # several database round trips, ~1-2 ms each in one region, ~180 ms across the
+    # Pacific. Render can't move an existing service, so a region change means a
+    # new service with a new name (a Blueprint with an existing service's name
+    # updates that service and keeps its region).
+    name: verdant-support-inbox-api-sg
+    region: singapore
     runtime: python
     plan: free
     rootDir: backend
