@@ -311,3 +311,71 @@ h3 {
   gap: 8px;
   margin-top: 8px;
 }
+
+/* ---------- customer view ---------- */
+.customer-view {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.who label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.who select,
+.typed-customer input,
+.compose textarea {
+  font: inherit;
+  padding: 6px 8px;
+  border: 1px solid #c9d1c8;
+  border-radius: 6px;
+}
+
+.typed-customer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* The customer's own messages on the right, the brand's replies on the left. */
+.customer-chat .message-customer {
+  align-self: flex-end;
+  background: #e3f1e8;
+}
+
+.customer-chat .message-agent {
+  align-self: flex-start;
+  background: #f1f3f0;
+}
+
+.samples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.samples button {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  text-align: left;
+}
+
+.compose {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.compose textarea {
+  flex: 1;
+  resize: vertical;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import AgentView from './agent/AgentView.tsx'
+import CustomerView from './customer/CustomerView.tsx'
 import { API_URL, missingSettings } from './config.ts'
 
 type View = 'customer' | 'agent'
@@ -55,7 +56,7 @@ export default function App() {
         <p className="banner-error">Missing settings: {missingSettings.join(', ')}. See frontend/.env.example.</p>
       )}
 
-      <main>{view === 'customer' ? <p>Customer view (Phase 6)</p> : <AgentView />}</main>
+      <main>{view === 'customer' ? <CustomerView /> : <AgentView />}</main>
     </>
   )
 }

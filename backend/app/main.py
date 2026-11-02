@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import auth, db, llm, routes_agent, webhook
+from app import auth, db, llm, routes_agent, routes_customer, webhook
 from app.config import get_settings
 from app.log import setup_logging
 
@@ -45,6 +45,7 @@ app.add_middleware(
 
 app.include_router(webhook.router)
 app.include_router(routes_agent.router)
+app.include_router(routes_customer.router)
 
 
 @app.get("/")

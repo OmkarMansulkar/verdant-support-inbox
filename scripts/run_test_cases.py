@@ -1,4 +1,4 @@
-"""Run the brief's five sample messages and the failure cases against a webhook.
+"""Run the brief's five sample messages, the failure cases and the Customer-view checks against a server.
 
   python scripts/run_test_cases.py                                   # local server
   python scripts/run_test_cases.py --url https://verdant-support-inbox-api.onrender.com/webhook
@@ -10,6 +10,8 @@ exits non-zero if anything failed. Uses only the standard library.
 import argparse
 import json
 import sys
+import urllib.request
+import uuid
 from concurrent.futures import ThreadPoolExecutor
 
 from send_webhook import DEFAULT_URL, load_secret, make_event, send, sign
@@ -106,9 +108,39 @@ def main() -> None:
     image["message"] = {"id": image["message"]["id"], "type": "image"}
     run.check("image message", run.post(image), 200, "ignored")
 
+    print("\n-- Customer view API (same code path as the webhook; never returns drafts)")
+    base = run.url.removesuffix("/webhook")
+    client_id = str(uuid.uuid4())
+    message = {"client_message_id": client_id, "test_customer_id": "cust_1043", "text": "Customer view test: hello"}
+    run.check("customer view message", customer_call(f"{base}/api/customer/messages", message), 200, "accepted")
+    run.check("same client_message_id again (double-click)",
+              customer_call(f"{base}/api/customer/messages", message), 200, "duplicate")
+    run.check("unknown test customer",
+              customer_call(f"{base}/api/customer/messages", {**message, "test_customer_id": "cust_9999"}), 422)
+    status, body = customer_call(f"{base}/api/customer/conversation?test_customer_id=cust_1043")
+    fields = {key for m in body.get("messages", []) for key in m} if isinstance(body, dict) else set()
+    ok = status == 200 and fields == {"id", "sender", "body", "created_at"}
+    run.results.append(ok)
+    print(f"{'PASS' if ok else 'FAIL'}  {'conversation returns message fields only (no drafts)':<55} HTTP {status}  {sorted(fields)}")
+
     passed = sum(run.results)
     print(f"\n{passed}/{len(run.results)} passed")
     sys.exit(0 if passed == len(run.results) else 1)
+
+
+def customer_call(url: str, body: dict | None = None) -> tuple[int, dict | str]:
+    """GET (no body) or POST JSON to a Customer-view endpoint; no signature, no sign-in."""
+    request = urllib.request.Request(url, data=json.dumps(body).encode() if body else None,
+                                     headers={"Content-Type": "application/json"} if body else {})
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            status, raw = response.status, response.read()
+    except urllib.error.HTTPError as error:
+        status, raw = error.code, error.read()
+    try:
+        return status, json.loads(raw)
+    except ValueError:
+        return status, raw.decode(errors="replace")[:80]
 
 
 if __name__ == "__main__":
