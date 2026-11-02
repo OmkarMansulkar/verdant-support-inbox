@@ -23,6 +23,14 @@ uvicorn app.main:app --reload --port 8000
 pytest
 ```
 
+**Test the webhook** (from the repo root, with the backend running; any Python 3.10+, no packages needed; the secret is read from `backend/.env` or the `WEBHOOK_SECRET` variable)
+
+```
+python scripts/send_webhook.py "What is your return policy?"
+python scripts/run_test_cases.py                 the 5 sample messages + failure cases
+python scripts/run_test_cases.py --url https://verdant-support-inbox-api.onrender.com/webhook
+```
+
 **Frontend** (Node 20+)
 
 ```
