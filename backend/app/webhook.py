@@ -72,7 +72,7 @@ def signature_is_valid(raw_body: bytes, header_value: str | None, secret: str) -
 
 # ---------- 3–4. Payload models ----------
 
-def _no_nul(value):
+def reject_nul(value):
     # Valid JSON can contain \u0000, but Postgres text can't store it; without
     # this check such a message would crash the insert with a 500.
     # Runs before the normal string checks (non-strings are left to those).
@@ -81,7 +81,7 @@ def _no_nul(value):
     return value
 
 
-Text = Annotated[str, BeforeValidator(_no_nul)]
+Text = Annotated[str, BeforeValidator(reject_nul)]
 
 
 class _Model(BaseModel):
@@ -109,7 +109,7 @@ class MessageIn(_Model):
     type: Text = Field(min_length=1, max_length=50)
     # Optional here because non-text messages (images) have no text; for
     # "text" messages handle_webhook requires it to be non-empty.
-    text: Annotated[str, Field(max_length=4000), BeforeValidator(_no_nul)] | None = None  # same limit as the database
+    text: Annotated[str, Field(max_length=4000), BeforeValidator(reject_nul)] | None = None  # same limit as the database
 
 
 class WebhookEvent(Envelope):

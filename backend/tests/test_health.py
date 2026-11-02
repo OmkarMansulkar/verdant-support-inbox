@@ -40,3 +40,24 @@ def test_missing_variable_stops_startup(monkeypatch):
             config.get_settings()
     finally:
         config.get_settings.cache_clear()
+
+
+@pytest.mark.parametrize("name, value", [
+    ("SUPABASE_URL", "https://<project-ref>.supabase.co"),
+    ("GROQ_API_KEY", "<groq-api-key>"),
+])
+def test_placeholder_value_stops_startup(monkeypatch, name, value):
+    config.get_settings.cache_clear()
+    monkeypatch.setenv(name, value)
+    try:
+        with pytest.raises(RuntimeError, match=name):
+            config.get_settings()
+    finally:
+        config.get_settings.cache_clear()
+
+
+def test_api_docs_build_without_warnings():
+    # Run with -W error, so a docs warning (e.g. duplicate operation ids) fails here.
+    paths = app.openapi()["paths"]
+    assert "/webhook" in paths
+    assert "/api/agent/conversations" in paths

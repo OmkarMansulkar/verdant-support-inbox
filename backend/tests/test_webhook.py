@@ -248,6 +248,6 @@ def test_get_not_allowed(client):
 
 
 def test_preview_is_one_line_and_capped():
-    assert ingest._preview("Hello\n\n  there") == "Hello there"
-    long = ingest._preview("word " * 100)
+    assert ingest.make_preview("Hello\n\n  there") == "Hello there"
+    long = ingest.make_preview("word " * 100)
     assert len(long) <= ingest.PREVIEW_LENGTH and long.endswith("…")

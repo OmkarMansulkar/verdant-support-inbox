@@ -68,7 +68,7 @@ def save_customer_message(event: WebhookEvent) -> StoredMessage | None:
                             last_message_preview = excluded.last_message_preview
             returning id
             """,
-            (event.brand_id, customer["id"], _preview(text)),
+            (event.brand_id, customer["id"], make_preview(text)),
         ).fetchone()
 
         # Unique (brand_id, event_id) and (brand_id, external_id): a retry of
@@ -114,7 +114,7 @@ def save_customer_message(event: WebhookEvent) -> StoredMessage | None:
     )
 
 
-def _preview(text: str) -> str:
+def make_preview(text: str) -> str:
     """One line for the inbox list: whitespace collapsed, cut at PREVIEW_LENGTH."""
     one_line = re.sub(r"\s+", " ", text).strip()
     if len(one_line) <= PREVIEW_LENGTH:

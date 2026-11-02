@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import db, llm, webhook
+from app import auth, db, llm, routes_agent, webhook
 from app.config import get_settings
 from app.log import setup_logging
 
@@ -25,8 +25,10 @@ settings = get_settings()  # raises at startup if any variable is missing
 async def lifespan(app: FastAPI):
     db.open_pool(settings.database_url)
     llm.open_client()
+    auth.open_client()
     log.info("app_started", extra={"cors_origins": settings.cors_origins})
     yield
+    auth.close_client()
     llm.close_client()
     db.close_pool()
     log.info("app_stopped")
@@ -42,6 +44,7 @@ app.add_middleware(
 )
 
 app.include_router(webhook.router)
+app.include_router(routes_agent.router)
 
 
 @app.get("/")
@@ -50,7 +53,9 @@ def root() -> dict:
 
 
 # GET and HEAD: uptime monitors often send HEAD, and a GET-only route answers 405.
-@app.api_route("/health", methods=["GET", "HEAD"])
+# Hidden from the API docs: it's for the uptime monitor, and one function serving
+# two methods would give the docs a duplicate operation id.
+@app.api_route("/health", methods=["GET", "HEAD"], include_in_schema=False)
 # Answers 503 when the database is unreachable, so the uptime monitor emails us
 # about database problems too, not only when the server itself is down.
 def health(response: Response) -> dict:

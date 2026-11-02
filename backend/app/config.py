@@ -5,6 +5,7 @@ missing names, so a bad deploy fails at deploy time instead of at 2 a.m.
 """
 
 import os
+import re
 from dataclasses import dataclass
 from functools import lru_cache
 
@@ -18,6 +19,9 @@ REQUIRED_VARIABLES = [
     "LLM_FALLBACK_MODEL",
     "CORS_ORIGINS",
 ]
+
+
+PLACEHOLDER = re.compile(r"<[a-z0-9-]+>")  # the style used in .env.example
 
 
 @dataclass(frozen=True)
@@ -38,6 +42,13 @@ def get_settings() -> Settings:
     missing = [name for name in REQUIRED_VARIABLES if not os.environ.get(name, "").strip()]
     if missing:
         raise RuntimeError(f"Missing required environment variables: {', '.join(missing)}")
+    # A value copied from .env.example but never filled in (e.g. "<groq-api-key>")
+    # is present but useless; it would only fail at the first real call.
+    placeholders = [name for name in REQUIRED_VARIABLES if PLACEHOLDER.search(os.environ[name])]
+    if placeholders:
+        raise RuntimeError(
+            f"Environment variables still contain a <placeholder> from .env.example: {', '.join(placeholders)}"
+        )
 
     env = os.environ
     return Settings(
