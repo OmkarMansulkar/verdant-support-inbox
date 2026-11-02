@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import db, webhook
+from app import db, llm, webhook
 from app.config import get_settings
 from app.log import setup_logging
 
@@ -24,8 +24,10 @@ settings = get_settings()  # raises at startup if any variable is missing
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db.open_pool(settings.database_url)
+    llm.open_client()
     log.info("app_started", extra={"cors_origins": settings.cors_origins})
     yield
+    llm.close_client()
     db.close_pool()
     log.info("app_stopped")
 

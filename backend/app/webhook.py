@@ -18,10 +18,10 @@ import time
 from dataclasses import dataclass
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Request
 from pydantic import AwareDatetime, BeforeValidator, BaseModel, ConfigDict, Field, ValidationError
 
-from app import ingest
+from app import drafts, ingest
 from app.config import get_settings
 
 log = logging.getLogger("app.webhook")
@@ -126,7 +126,7 @@ class Outcome:
     status: Literal["accepted", "duplicate", "ignored"]
     event_id: str
     message_id: str | None = None   # our id for the stored message
-    draft_id: str | None = None     # the pending draft to generate (Phase 3)
+    draft_id: str | None = None     # the pending draft to generate after responding
     reason: str | None = None       # why an event was ignored
 
     def response(self) -> dict:
@@ -221,11 +221,14 @@ def _reject(status: int, reason: str, detail, event_id: str | None = None) -> HT
 
 @router.post("/webhook")
 def receive_webhook(
+    background_tasks: BackgroundTasks,
     raw_body: bytes = Depends(read_limited_body),
     x_signature: str | None = Header(default=None),
 ) -> dict:
     # The body arrives as raw bytes (not a Pydantic parameter) because the
     # signature must be checked on exactly the bytes that were sent.
     outcome = handle_webhook(raw_body, x_signature)
-    # Phase 3: schedule AI drafting for outcome.draft_id as a background task.
+    if outcome.draft_id:
+        # Runs after the response is sent: the sender never waits for the LLM.
+        background_tasks.add_task(drafts.generate, outcome.draft_id)
     return outcome.response()

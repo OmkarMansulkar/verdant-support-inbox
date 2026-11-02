@@ -7,7 +7,7 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 
-from app import ingest
+from app import drafts, ingest
 from app.main import app
 from app.webhook import sign, signature_is_valid
 
@@ -37,6 +37,14 @@ def stored(monkeypatch):
         return ingest.StoredMessage("m-1", "c-1", "d-1", superseded_drafts=0)
 
     monkeypatch.setattr(ingest, "save_customer_message", fake_save)
+    return calls
+
+
+@pytest.fixture(autouse=True)
+def scheduled_drafts(monkeypatch):
+    """Records which drafts the webhook schedules, instead of calling the LLM."""
+    calls = []
+    monkeypatch.setattr(drafts, "generate", lambda draft_id: calls.append(draft_id))
     return calls
 
 
@@ -107,19 +115,21 @@ def test_signature_covers_exact_bytes():
 
 # ---------- status codes ----------
 
-def test_valid_message_accepted(client, stored):
+def test_valid_message_accepted_and_drafting_scheduled(client, stored, scheduled_drafts):
     response = post(client, SAMPLE)
     assert response.status_code == 200
     assert response.json() == {"status": "accepted", "event_id": "evt_7f3a91c2", "message_id": "m-1"}
     assert stored[0].message.text == SAMPLE["message"]["text"]
     assert stored[0].customer.id == "cust_1042"
+    assert scheduled_drafts == ["d-1"]
 
 
-def test_duplicate_returns_200(client, monkeypatch):
+def test_duplicate_returns_200_and_drafts_nothing(client, monkeypatch, scheduled_drafts):
     monkeypatch.setattr(ingest, "save_customer_message", lambda event: None)
     response = post(client, SAMPLE)
     assert response.status_code == 200
     assert response.json()["status"] == "duplicate"
+    assert scheduled_drafts == []
 
 
 def test_missing_signature_401(client, stored):

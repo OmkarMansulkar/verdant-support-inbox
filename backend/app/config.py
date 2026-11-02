@@ -30,6 +30,7 @@ class Settings:
     llm_model: str
     llm_fallback_model: str
     cors_origins: list[str]
+    llm_base_url: str  # optional; any OpenAI-compatible provider works
 
 
 @lru_cache
@@ -52,4 +53,5 @@ def get_settings() -> Settings:
             for origin in env["CORS_ORIGINS"].split(",")
             if origin.strip()
         ],
+        llm_base_url=env.get("LLM_BASE_URL", "").strip().rstrip("/") or "https://api.groq.com/openai/v1",
     )

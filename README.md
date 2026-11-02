@@ -31,6 +31,8 @@ python scripts/run_test_cases.py                 the 5 sample messages + failure
 python scripts/run_test_cases.py --url https://verdant-support-inbox-api.onrender.com/webhook
 ```
 
+**Try the AI drafts** (calls the real LLM with the server's prompt; no database needed): `backend\.venv\Scripts\python scripts\try_drafts.py` [`backend/.venv/bin/python scripts/try_drafts.py`]
+
 **Frontend** (Node 20+)
 
 ```
