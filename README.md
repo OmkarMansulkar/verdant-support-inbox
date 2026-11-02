@@ -28,10 +28,10 @@ pytest
 ```
 python scripts/send_webhook.py "What is your return policy?"
 python scripts/run_test_cases.py                 the 5 sample messages + failure cases
-python scripts/run_test_cases.py --url https://verdant-support-inbox-api.onrender.com/webhook
+python scripts/run_test_cases.py --url https://verdant-support-inbox-api-sg.onrender.com/webhook
 ```
 
-**Check agent sign-in and the agent API** (real Supabase sign-in; asks for the password): `python scripts/check_agent_api.py priya@example.com` [add `--api https://verdant-support-inbox-api.onrender.com` for production]
+**Check agent sign-in and the agent API** (real Supabase sign-in; asks for the password): `python scripts/check_agent_api.py priya@example.com` [add `--api https://verdant-support-inbox-api-sg.onrender.com` for production]
 
 **Try the AI drafts** (calls the real LLM with the server's prompt; no database needed): `backend\.venv\Scripts\python scripts\try_drafts.py` [`backend/.venv/bin/python scripts/try_drafts.py`]
 

@@ -5,7 +5,7 @@ Uses only the Python standard library, so any Python 3.10+ works.
 Examples (from the repo root):
   python scripts/send_webhook.py "What is your return policy?"
   python scripts/send_webhook.py "Do you deliver to Dubai?" --customer cust_1043 --name "Rohan Mehta" --phone +919800000002
-  python scripts/send_webhook.py "hello" --url https://verdant-support-inbox-api.onrender.com/webhook
+  python scripts/send_webhook.py "hello" --url https://verdant-support-inbox-api-sg.onrender.com/webhook
   python scripts/send_webhook.py "hello" --signature bad      # expect 401
 
 The secret comes from the WEBHOOK_SECRET environment variable, or else from

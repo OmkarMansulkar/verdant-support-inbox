@@ -1,7 +1,7 @@
 """Run the brief's five sample messages, the failure cases and the Customer-view checks against a server.
 
   python scripts/run_test_cases.py                                   # local server
-  python scripts/run_test_cases.py --url https://verdant-support-inbox-api.onrender.com/webhook
+  python scripts/run_test_cases.py --url https://verdant-support-inbox-api-sg.onrender.com/webhook
 
 Each run uses fresh ids, so it can be repeated. Prints PASS/FAIL per case and
 exits non-zero if anything failed. Uses only the standard library.

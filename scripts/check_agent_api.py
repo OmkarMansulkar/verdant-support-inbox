@@ -7,7 +7,7 @@ backend/.env (or the environment). Asks for the password (or reads
 AGENT_PASSWORD, for scripted runs); never stores it.
 
   python scripts/check_agent_api.py priya@example.com
-  python scripts/check_agent_api.py priya@example.com --api https://verdant-support-inbox-api.onrender.com
+  python scripts/check_agent_api.py priya@example.com --api https://verdant-support-inbox-api-sg.onrender.com
 """
 
 import argparse
