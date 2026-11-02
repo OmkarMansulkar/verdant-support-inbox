@@ -1,12 +1,21 @@
 import { useEffect, useState } from 'react'
-import { API_URL } from './config.ts'
+import AgentView from './agent/AgentView.tsx'
+import { API_URL, missingSettings } from './config.ts'
 
 type View = 'customer' | 'agent'
 type BackendStatus = 'checking' | 'ok' | 'down'
 
+// The chosen view is kept in the URL (#agent / #customer) so a page refresh stays on it.
+const viewFromUrl = (): View => (window.location.hash === '#agent' ? 'agent' : 'customer')
+
 export default function App() {
-  const [view, setView] = useState<View>('customer')
+  const [view, setView] = useState<View>(viewFromUrl)
   const [backend, setBackend] = useState<BackendStatus>('checking')
+
+  function switchView(next: View) {
+    setView(next)
+    window.history.replaceState(null, '', `#${next}`)
+  }
 
   // Shows whether the API is reachable. On Render's free tier the first
   // request after idle can take up to a minute while the server wakes up.
@@ -26,7 +35,7 @@ export default function App() {
             role="tab"
             aria-selected={view === 'customer'}
             className={view === 'customer' ? 'active' : ''}
-            onClick={() => setView('customer')}
+            onClick={() => switchView('customer')}
           >
             Customer
           </button>
@@ -34,7 +43,7 @@ export default function App() {
             role="tab"
             aria-selected={view === 'agent'}
             className={view === 'agent' ? 'active' : ''}
-            onClick={() => setView('agent')}
+            onClick={() => switchView('agent')}
           >
             Agent
           </button>
@@ -42,11 +51,11 @@ export default function App() {
         <span className={`status status-${backend}`}>API: {backend}</span>
       </header>
 
-      {!API_URL && <p className="banner-error">VITE_API_URL is not set. See frontend/.env.example.</p>}
+      {missingSettings.length > 0 && (
+        <p className="banner-error">Missing settings: {missingSettings.join(', ')}. See frontend/.env.example.</p>
+      )}
 
-      <main>
-        {view === 'customer' ? <p>Customer view (Phase 6)</p> : <p>Agent view (Phase 5)</p>}
-      </main>
+      <main>{view === 'customer' ? <p>Customer view (Phase 6)</p> : <AgentView />}</main>
     </>
   )
 }

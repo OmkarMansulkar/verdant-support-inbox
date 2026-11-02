@@ -65,3 +65,249 @@ body {
 main {
   padding: 20px;
 }
+
+/* ---------- shared ---------- */
+button {
+  font: inherit;
+  padding: 6px 12px;
+  border: 1px solid #c9d1c8;
+  border-radius: 6px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+button.primary {
+  background: #2f6b4f;
+  border-color: #2f6b4f;
+  color: #ffffff;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #dfe3de;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+h2,
+h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.muted {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.error {
+  color: #b42318;
+  font-size: 14px;
+}
+
+.notice {
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: #eef4f0;
+  font-size: 14px;
+}
+
+.flag {
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: #fff4e0;
+  color: #8a4b00;
+  font-size: 14px;
+}
+
+/* ---------- sign-in ---------- */
+.signin {
+  max-width: 360px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.signin label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.signin input {
+  font: inherit;
+  padding: 8px;
+  border: 1px solid #c9d1c8;
+  border-radius: 6px;
+}
+
+/* ---------- agent workspace ---------- */
+.workspace-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.panes {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.empty {
+  color: #6b7280;
+}
+
+.inbox ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.inbox-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid #eef0ed;
+  border-radius: 0;
+  padding: 10px 8px;
+}
+
+.inbox-item.selected {
+  background: #eef4f0;
+}
+
+.inbox-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.inbox-top time {
+  flex-shrink: 0;
+  white-space: nowrap;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.preview {
+  color: #4b5563;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #eef0ed;
+  color: #4b5563;
+}
+
+.badge-ready {
+  background: #e3f1e8;
+  color: #2f6b4f;
+}
+
+.badge-failed {
+  background: #fde8e7;
+  color: #b42318;
+}
+
+.badge-flag {
+  background: #fff4e0;
+  color: #8a4b00;
+}
+
+/* ---------- conversation ---------- */
+.conversation-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.messages {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.message {
+  max-width: 75%;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.message p {
+  margin: 0 0 4px;
+  white-space: pre-wrap; /* keep the customer's line breaks */
+  overflow-wrap: anywhere;
+}
+
+.message .meta {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.message-customer {
+  align-self: flex-start;
+  background: #f1f3f0;
+}
+
+.message-agent {
+  align-self: flex-end;
+  background: #e3f1e8;
+}
+
+.draft {
+  border-top: 1px solid #dfe3de;
+  padding-top: 12px;
+}
+
+.draft-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.draft textarea {
+  width: 100%;
+  font: inherit;
+  padding: 8px;
+  border: 1px solid #c9d1c8;
+  border-radius: 6px;
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
