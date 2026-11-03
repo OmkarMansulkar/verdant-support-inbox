@@ -2,7 +2,7 @@
 
 Work in progress. The final one-page README (decisions, cuts, AI notes, answers) comes at the end.
 
-## Run locally (Windows commands; macOS/Linux in brackets)
+## Run locally (Windows commands; macOS/Linux )
 
 **Database** (a free Supabase project, once)
 
